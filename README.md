@@ -38,5 +38,3 @@ The board itself works regardless of whether this step has been completed — a 
 ## Tech
 
 Vanilla HTML, CSS, and JavaScript only — no frameworks, no build tooling, no external resources (no CDN scripts, no Google Fonts, no image files).
-
-See [CLAUDE.md](CLAUDE.md) for architecture notes and hard constraints for future changes.
