@@ -2,6 +2,8 @@
 
 A single-file, dependency-free Kanban board demo built for UOB's internal IT PMO. This is an internal demo/training tool only — it does not use UOB's real logo, trademarks, or imitate any official UOB system.
 
+**Live demo:** https://yewintnyein.github.io/itpm/
+
 ## Running it
 
 No build step, no server, no install. Just open the file directly:
