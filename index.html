@@ -198,6 +198,7 @@
   .summary-chip {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.1);
+    border-top: 3px solid rgba(255,255,255,0.35);
     border-radius: var(--radius);
     padding: var(--space-2) var(--space-4);
     font-size: 0.72rem;
@@ -207,6 +208,13 @@
     flex-direction: column;
     gap: 2px;
   }
+
+  /* Same accent colors as the kanban column headers below, so the
+     status language reads as one system top to bottom. */
+  .summary-chip[data-status="Backlog"] { border-top-color: var(--color-low); }
+  .summary-chip[data-status="In Progress"] { border-top-color: #6fa4ff; }
+  .summary-chip[data-status="Blocked"] { border-top-color: var(--color-critical); }
+  .summary-chip[data-status="Done"] { border-top-color: var(--color-success); }
 
   .summary-chip strong {
     font-size: 1.15rem;
@@ -756,6 +764,16 @@
         <option>Low</option>
       </select>
     </div>
+    <div class="filter-field">
+      <label for="filterStatus">Status</label>
+      <select id="filterStatus">
+        <option value="">All statuses</option>
+        <option>Backlog</option>
+        <option>In Progress</option>
+        <option>Blocked</option>
+        <option>Done</option>
+      </select>
+    </div>
     <button type="button" class="btn-clear" id="clearFiltersBtn">Clear filters</button>
   </section>
 
@@ -874,7 +892,7 @@
 
   const state = {
     tasks: [],
-    filters: { project: "", assignee: "", priority: "" }
+    filters: { project: "", assignee: "", priority: "", status: "" }
   };
 
   let idCounter = 0;
@@ -979,6 +997,7 @@
     return state.tasks.filter((t) => {
       if (state.filters.project && t.project !== state.filters.project) return false;
       if (state.filters.priority && t.priority !== state.filters.priority) return false;
+      if (state.filters.status && t.status !== state.filters.status) return false;
       if (state.filters.assignee) {
         const q = state.filters.assignee.toLowerCase();
         if (!t.assignee.toLowerCase().includes(q)) return false;
@@ -999,7 +1018,7 @@
     const strip = document.getElementById("summaryStrip");
     let html = `<div class="summary-chip"><strong>${total}</strong><span>Total tasks</span></div>`;
     counts.forEach((c) => {
-      html += `<div class="summary-chip"><strong>${c.count}</strong><span>${escapeHtml(c.status)}</span></div>`;
+      html += `<div class="summary-chip" data-status="${escapeHtml(c.status)}"><strong>${c.count}</strong><span>${escapeHtml(c.status)}</span></div>`;
     });
     html += `<div class="summary-chip overdue"><strong>${overdue}</strong><span>Overdue</span></div>`;
     if (urgent > 0) {
@@ -1111,10 +1130,12 @@
     state.filters.project = document.getElementById("filterProject").value;
     state.filters.assignee = document.getElementById("filterAssignee").value.trim();
     state.filters.priority = document.getElementById("filterPriority").value;
+    state.filters.status = document.getElementById("filterStatus").value;
     renderBoard();
   }
 
   function clearFilters() {
+    document.getElementById("filterStatus").value = "";
     document.getElementById("filterProject").value = "";
     document.getElementById("filterAssignee").value = "";
     document.getElementById("filterPriority").value = "";
@@ -1281,6 +1302,7 @@
     document.getElementById("filterProject").addEventListener("change", applyFilters);
     document.getElementById("filterAssignee").addEventListener("input", applyFilters);
     document.getElementById("filterPriority").addEventListener("change", applyFilters);
+    document.getElementById("filterStatus").addEventListener("change", applyFilters);
     document.getElementById("clearFiltersBtn").addEventListener("click", clearFilters);
 
     document.getElementById("board").addEventListener("click", (e) => {
